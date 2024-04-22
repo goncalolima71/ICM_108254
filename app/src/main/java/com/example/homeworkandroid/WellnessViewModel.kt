@@ -4,32 +4,45 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 
 class WellnessViewModel : ViewModel() {
-    private val _tasks = getPredefinedMovies().toMutableStateList()
+
+    private val predefinedTasks = getPredefinedMovies()
+
+
+    private val userAddedTasks = getWellnessTasks().toMutableStateList()
+
+
+    private val allTasks = (predefinedTasks + userAddedTasks).distinctBy { it.id }.toMutableList()
+
+
     val tasks: List<WellnessTask>
-        get() = _tasks
+        get() = allTasks
+
+
+    fun add(item: WellnessTask) {
+        userAddedTasks.add(item)
+        allTasks.add(item)
+    }
+
+
+    fun remove(item: WellnessTask) {
+        userAddedTasks.remove(item)
+        allTasks.remove(item)
+    }
+
+
+    fun changeTaskChecked(item: WellnessTask, checked: Boolean) {
+        item.checked = checked
+    }
+
 
     private fun getPredefinedMovies(): List<WellnessTask> {
         return listOf(
             WellnessTask(1, "The Matrix"),
             WellnessTask(2, "Inception"),
             WellnessTask(3, "Interstellar"),
-            WellnessTask(4,"Breaking Bad"),
-            WellnessTask(4,"The office"),
+            WellnessTask(4, "Breaking Bad"),
+            WellnessTask(5, "The office")
 
-            // Adicione mais filmes conforme necessário
         )
     }
-
-    fun add(item: WellnessTask) {
-        _tasks.add(item)
-    }
-
-    fun remove(item: WellnessTask) {
-        _tasks.remove(item)
-    }
-
-    fun changeTaskChecked(item: WellnessTask, checked: Boolean) =
-        _tasks.find { it.id == item.id }?.let { task ->
-            task.checked = checked
-        }
 }
